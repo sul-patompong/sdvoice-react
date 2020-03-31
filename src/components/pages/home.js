@@ -7,6 +7,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from "@material-ui/core/Grid";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
+import FacebookLogin from 'react-facebook-login';
+import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -17,7 +19,12 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+
 const Home = () => {
+    const responseFacebook = res => {
+        console.log('Response from facebook:', res);
+    };
+
     const classes = useStyles();
     return (
         <Grid container className={classes.root}>
@@ -31,7 +38,21 @@ const Home = () => {
                 </Card>
             </Grid>
             <Grid item xs={12} className={classes.gridItem} style={{textAlign: "center"}}>
-                <Button variant='contained' color='secondary'>Join us</Button>
+                {/*<Button variant='contained' color='secondary' onClick={loginWithFacebook}>Join us with Facebook</Button>*/}
+                <Grid container direction="column">
+                    <Typography variant='p' gutterBottom>
+                        ร่วมลงชื่อกับเราด้วย
+                    </Typography>
+                    <FacebookLogin
+                        appId="2542483672657650"
+                        autoLoad={true}
+                        fields="name,email,picture"
+                        scope="public_profile"
+                        icon="fa-facebook"
+                        // onClick={componentClicked}
+                        callback={responseFacebook}/>
+                </Grid>
+
             </Grid>
         </Grid>
     )
