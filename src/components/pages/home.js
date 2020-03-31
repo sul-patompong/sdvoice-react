@@ -6,13 +6,15 @@ import CardMedia from "@material-ui/core/CardMedia";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import Grid from "@material-ui/core/Grid";
 import CardContent from "@material-ui/core/CardContent";
-import FacebookLogin from 'react-facebook-login';
-import Typography from "@material-ui/core/Typography";
-import {Link} from "react-router-dom";
+import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
+import {Link, useHistory} from "react-router-dom";
+import FacebookIcon from '@material-ui/icons/Facebook';
 
 // Hooks
 import MainContext from "../../context/mainContext";
-import {Redirect} from "react-router-dom";
+import Button from "@material-ui/core/Button";
+import Backdrop from "@material-ui/core/Backdrop";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -20,22 +22,35 @@ const useStyles = makeStyles((theme) => ({
     },
     gridItem: {
         paddingTop: 20
-    }
+    },
+    backdrop: {
+        zIndex: theme.zIndex.drawer + 1,
+        color: '#fff',
+    },
 }));
 
 
 const Home = () => {
+    const history = useHistory();
 
     const mainContext = useContext(MainContext);
-    const {login, isAuthenticated} = mainContext;
+    const {login, isLoading, setLoading} = mainContext;
 
     const classes = useStyles();
 
-    if (isAuthenticated)
-        return <Redirect to='/campaign-result'/>;
+    const facebookResponse = (res) => {
+        setLoading(true);
+        login(res);
+        history.push('/campaign-register');
+    };
 
     return (
         <Grid container className={classes.root}>
+            <Backdrop className={classes.backdrop} open={isLoading}
+                // onClick={handleClose}
+            >
+                <CircularProgress color="inherit"/>
+            </Backdrop>
             <Grid item xs={12} className={classes.gridItem}>
                 <Card>
                     <CardHeader title='Why we need a refund'/>
@@ -46,21 +61,27 @@ const Home = () => {
                 </Card>
             </Grid>
             <Grid item xs={12} className={classes.gridItem} style={{textAlign: "center"}}>
-                {/*<Button variant='contained' color='secondary' onClick={loginWithFacebook}>Join us with Facebook</Button>*/}
                 <Grid container direction="column">
-                    <Typography variant='p' gutterBottom>
-                        ร่วมลงชื่อกับเราด้วย
-                    </Typography>
-                    <Link to='/campaign-register'>
-                        <FacebookLogin
-                            appId="2542483672657650"
-                            autoLoad={true}
-                            fields="name,email,picture"
-                            scope="public_profile"
-                            icon="fa-facebook"
-                            // onClick={componentClicked}
-                            callback={responseFacebook}/>
-                    </Link>
+                    <FacebookLogin
+                        appId="2542483672657650"
+                        autoLoad={false}
+                        fields="name,email,picture"
+                        scope="public_profile"
+                        callback={facebookResponse}
+                        render={renderProps => (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={renderProps.onClick}
+                                startIcon={<FacebookIcon />}
+                            >
+                                ร่วมลงชื่อด้วย Facebook
+                            </Button>
+                        )}
+                    />
+                    <Button>
+                        <Link to="/campaign-result">ดูผลการลงชื่อ</Link>
+                    </Button>
                 </Grid>
             </Grid>
         </Grid>

@@ -1,13 +1,19 @@
 import React, {useReducer} from "react";
 import mainReducer from "./mainReducer";
 import MainContext from "./mainContext";
-import {FACEBOOK_AUTH_FAIL, FACEBOOK_AUTH_SUCCESS} from "./types";
+import {FACEBOOK_AUTH_FAIL, FACEBOOK_AUTH_SUCCESS, SET_LOADING, SET_USER_PROFILE, SET_VOTE_RESULT} from "./types";
 
 
 const MainState = props => {
     const initialState = {
         isAuthenticated: false,
-        facebookProfile: {},
+        voteResult: null,
+        isLoading: false,
+        facebookProfile: {
+            name: '',
+            email: '',
+            picture: '',
+        },
         userProfile: {
             firstName: '',
             lastName: '',
@@ -21,7 +27,6 @@ const MainState = props => {
 
     const login = facebookResponse => {
         if (facebookResponse === null) {
-            console.log('Is here?');
             dispatch({
                 type: FACEBOOK_AUTH_FAIL
             });
@@ -33,11 +38,41 @@ const MainState = props => {
         }
     };
 
+    const setUserProfile = (name, value) => {
+        dispatch({
+            type: SET_USER_PROFILE,
+            payload: {
+                name, value
+            }
+        })
+    };
+
+    const setVote = value => {
+        dispatch({
+            type: SET_VOTE_RESULT,
+            payload: value
+        })
+    };
+
+    const setLoading = value => {
+        dispatch({
+            type: SET_LOADING,
+            payload: value
+        })
+    };
+
     return (
         <MainContext.Provider
             value={{
                 isAuthenticated: state.isAuthenticated,
-                login
+                facebookProfile: state.facebookProfile,
+                userProfile: state.userProfile,
+                voteResult: state.voteResult,
+                isLoading: state.isLoading,
+                setVote,
+                login,
+                setUserProfile,
+                setLoading
             }}
         >
             {props.children}
