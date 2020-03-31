@@ -9,6 +9,7 @@ import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Home from "./components/pages/home";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
+import MainState from "./context/MainState";
 
 const useStyles = makeStyles((theme) => ({
     palette: {
@@ -59,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 function App() {
     const classes = useStyles();
     return (
-        <React.Fragment>
+        <MainState>
             <AppBar position="fixed">
                 <Toolbar>
                     <PollIcon className={classes.icon}/>
@@ -80,11 +81,14 @@ function App() {
                             <Route exact path='/'>
                                 <Home/>
                             </Route>
+                            <Route exact path='/campaign-result'>
+                                <Home/>
+                            </Route>
                         </Switch>
                     </Router>
                 </Container>
             </main>
-        </React.Fragment>
+        </MainState>
     );
 }
 
